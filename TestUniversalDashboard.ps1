@@ -42,3 +42,23 @@ $Dashboard = New-UDDashboard -Title "Input form validation failure after clearin
     }
 }
 Start-UDDashboard -Port 10000 -Dashboard $Dashboard
+
+Get-UDDashboard | where port -eq 10000 | Stop-UDDashboard
+$Dashboard = New-UDDashboard -Title "Input ID not set" -Content {
+    New-UDInput -Title "Input that should have ID" -Id "TestInput" -Endpoint {
+        param (
+            $Quantity
+        )
+    }
+    New-UDCard -Title "TestCard" -ID "TestCard" -Content {"Test card content"}
+    New-UDElement -Tag "a" -Attributes @{
+        className = "btn"
+        onClick = {
+            Remove-UDElement -Id "TestInput"
+            Remove-UDElement -Id "TestCard"
+        }
+    } -Content {
+        "Remove" 
+    } 
+}
+Start-UDDashboard -Port 10000 -Dashboard $Dashboard
