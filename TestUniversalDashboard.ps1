@@ -62,3 +62,16 @@ $Dashboard = New-UDDashboard -Title "Input ID not set" -Content {
     } 
 }
 Start-UDDashboard -Port 10000 -Dashboard $Dashboard
+
+
+Get-UDDashboard | where port -eq 10000 | Stop-UDDashboard
+$Dashboard = New-UDDashboard -Title "Input Quantity" -Content {
+    New-UDInput -Title "Input that should have ID" -Id "TestInput" -Endpoint {
+        param (
+            $Quantity
+        )
+        Wait-Debugger
+        $Var = $Quantity
+    }
+}
+Start-UDDashboard -Port 10000 -Dashboard $Dashboard
