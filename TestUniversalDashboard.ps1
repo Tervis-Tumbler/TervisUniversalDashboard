@@ -75,3 +75,23 @@ $Dashboard = New-UDDashboard -Title "Input Quantity" -Content {
     }
 }
 Start-UDDashboard -Port 10000 -Dashboard $Dashboard
+
+
+Get-UDDashboard | where port -eq 10000 | Stop-UDDashboard
+$Dashboard = New-UDDashboard -Title "Input Quantity" -Content {
+    New-UDInput -Title "Input that should have ID" -Id "TestInput" -Endpoint {
+        param (
+            $ItemNumber,
+            $Quantity
+        )
+        if (-not $Session:LineItems) {
+            $Session:LineItems = New-Object System.Collections.ArrayList
+        }
+        $Session:LineItems += [PSCustomObject] {
+            ItemNumber = $ItemNumber
+            Quantity = $Quantity
+        }
+    }
+    New-UDTable
+}
+Start-UDDashboard -Port 10000 -Dashboard $Dashboard
