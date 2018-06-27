@@ -95,3 +95,51 @@ $Dashboard = New-UDDashboard -Title "Input Quantity" -Content {
     New-UDTable
 }
 Start-UDDashboard -Port 10000 -Dashboard $Dashboard
+
+
+$CSVPath = $env:TMP
+New-Item -ItemType File -Path $CSVPath -Name Test1.csv
+New-Item -ItemType File -Path $CSVPath -Name Test2.csv
+
+Get-UDDashboard | where port -eq 10000 | Stop-UDDashboard
+$Dashboard = New-UDDashboard -Title "File selector" -Content {
+    New-UDColumn -Size 2 -Endpoint {
+        New-UDInput -Title "Simple Form" -Id "Form" -Content {
+            $Files = (Get-ChildItem -Path $CSVPath).Name
+            $NewFiles =@()
+            foreach($a in $files){
+        
+                $NewFiles += $a.trimend(".csv")
+        
+            }                
+            New-UDInputField -Type select -Name 'MigrationChooser' -Placeholder "Which Migration would you like to look at ?" -Values $NewFiles
+        
+        } -EndPoint {
+            param(
+                $MigrationChooser
+            )
+                                                    
+            New-UDInputAction -Toast  "Test $MigrationChooser" 
+        }
+    } -AutoRefresh -RefreshInterval 30
+}
+Start-UDDashboard -Port 10000 -Dashboard $Dashboard
+
+
+
+Get-UDDashboard | where port -eq 10003 | Stop-UDDashboard
+$Dashboard = New-UDDashboard -Title "Input Quantity" -Content {
+    New-UDInput -Title "Input that should have ID" -Id "TestInput" -Endpoint {
+        [cmdletbinding()]
+        param (
+            $Quantity
+        )
+        dynamicparam {
+            New-DynamicParameter -Name Test -Type String
+        }
+        process {
+            New-UDInputAction -Toast "$Test $Quantity"
+        }        
+    }
+}
+Start-UDDashboard -Port 10003 -Dashboard $Dashboard
