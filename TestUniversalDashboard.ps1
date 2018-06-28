@@ -143,3 +143,58 @@ $Dashboard = New-UDDashboard -Title "Input Quantity" -Content {
     }
 }
 Start-UDDashboard -Port 10003 -Dashboard $Dashboard
+
+
+Get-UDDashboard | where port -eq 10003 | Stop-UDDashboard
+$ValidValues = 1,2,3
+$Dashboard = New-UDDashboard -Title "Input Quantity" -Content {
+    New-UDInput -Title "Input that should have valid value" -Id "TestInput" -Content {
+        New-UDInputField -Name Value -Type select -Values $ValidValues
+    } -Endpoint {
+        param (
+            $Value
+        )
+        New-TestObject $PSBoundParameters
+    }
+} -EndpointInitializationScript {
+    function New-TestObject {
+        param (
+            [ValidateSet(1,2,3)]$Value
+        )
+        $PSBoundParameters
+    }
+}
+Start-UDDashboard -Port 10003 -Dashboard $Dashboard
+
+
+
+Get-UDDashboard | where port -eq 10003 | Stop-UDDashboard
+$Dashboard = New-UDDashboard -Title "Input Quantity" -Content {
+    $Var = "3","2","1" | Sort-Object
+    New-UDInput -Title "Input that should have ID" -Id "TestInput" -Content {
+        New-UDInputField -Name Quantity -Values $Var
+    } -Endpoint {
+        param (
+            $Quantity
+        )
+        
+        New-UDInputAction -Toast $Quantity
+    }
+}
+Start-UDDashboard -Port 10003 -Dashboard $Dashboard
+
+
+Get-UDDashboard | where port -eq 10003 | Stop-UDDashboard
+$Dashboard = New-UDDashboard -Title "Input Quantity" -Content {
+    $Var = "3","2","1" | ForEach-Object -MemberName ToString
+    New-UDInput -Title "Input that should have ID" -Id "TestInput" -Content {
+        New-UDInputField -Name Quantity -Values $Var
+    } -Endpoint {
+        param (
+            $Quantity
+        )
+        
+        New-UDInputAction -Toast $Quantity
+    }
+}
+Start-UDDashboard -Port 10003 -Dashboard $Dashboard
