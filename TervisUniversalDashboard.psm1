@@ -74,3 +74,11 @@ function New-TervisUDPreloader {
         }
     }
 }
+
+function Debug-UniersalDashboardService {
+    param (
+        $Port
+    )
+    $ProcessID = Get-NetTCPConnection -LocalPort $Port -RemotePort 0 | select -ExpandProperty OwningProcess
+    Enter-PSHostProcess -Id $ProcessID
+}
