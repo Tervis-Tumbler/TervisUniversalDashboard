@@ -82,3 +82,15 @@ function Debug-UniersalDashboardService {
     $ProcessID = Get-NetTCPConnection -LocalPort $Port -RemotePort 0 | select -ExpandProperty OwningProcess
     Enter-PSHostProcess -Id $ProcessID
 }
+
+function Start-TervisUDDashboard {
+    param (
+        $Dashboard,
+        $Port
+    )
+    $CertificateFilePassword = Get-TervisPasswordstatePassword -GUID "49d35824-dcce-4fc1-98ff-ebb7ecc971de" -AsCredential |
+    Select-Object -ExpandProperty Password
+    
+    $File = Get-item -Path .\certificate.pfx
+    Start-UDDashboard -Dashboard $Dashboard -Port $Port -CertificateFile $CertificateFile -CertificateFilePassword $CertificateFilePassword -Wait 
+}
