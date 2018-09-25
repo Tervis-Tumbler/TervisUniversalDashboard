@@ -17,7 +17,6 @@ $WebToPrintImageByOrderPage = New-UDPage -Url "/order/:ERPOrderNumber" -Endpoint
         [Parameter(HelpMessage="Order Number")]
         $ERPOrderNumber
     )
-    Set-CustomyzerModuleEnvironment -Name Production
     New-UDTable -Title "Customyzer Approval Order Header" -Headers OrderID, ERPOrderNumber, WebOrderNumber, CustomerEmail, StatusID, CreatedDateUTC -Endpoint {
         Get-CustomyzerApprovalOrder -ERPOrderNumber $ERPOrderNumber |
         Out-UDTableData -Property OrderID, ERPOrderNumber, WebOrderNumber, CustomerEmail, StatusID, CreatedDateUTC
@@ -30,6 +29,5 @@ $WebToPrintImageByOrderPage = New-UDPage -Url "/order/:ERPOrderNumber" -Endpoint
 }
 
 
-
-$Dashboard = New-UDDashboard -Title Test -Pages @($WebToPrintImageByOrderPageInput, $WebToPrintImageByOrderPage) -LoginPage $LoginPage
+$Dashboard = New-UDDashboard -Title Test -Pages @($WebToPrintImageByOrderPageInput, $WebToPrintImageByOrderPage) -LoginPage $LoginPage -EndpointInitializationScript {Set-CustomyzerModuleEnvironment -Name Production}
 Start-UDDashboard -AutoReload -Dashboard $Dashboard -AllowHttpForLogin
