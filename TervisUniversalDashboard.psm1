@@ -94,3 +94,18 @@ function Start-TervisUDDashboard {
     $File = Get-item -Path .\certificate.pfx
     Start-UDDashboard -Dashboard $Dashboard -Port $Port -CertificateFile $CertificateFile -CertificateFilePassword $CertificateFilePassword -Wait 
 }
+
+function New-TervisUDButtonLink {
+    param (
+        $Download,
+        $Href,
+        $Content
+    )
+    New-UDElement -Tag "a" -Attributes @{
+        className = "btn"
+        download = $Download
+        href = $Href
+    } -Content {
+        $Content
+    }
+}
